@@ -1,0 +1,8 @@
+
+library(tm)
+uri<-"C:/Users/angelo/Google Drive/Drive Pagarme/07 Financeiro/02 Contabilidade/02 Fiscal/03 SISCOSERV/01 ADMINISTRATIVO/02 Cartão Bradesco/2016/Bradesco_Visa_08_2016.pdf"
+
+ if(all(file.exists(Sys.which(c("pdfinfo", "pdftotext"))))) {
+pdf <- readPDF(control = list(text = "-layout"))(elem = list(uri = uri), language = "en", id = "id1")
+content(pdf)[1:200]
+}

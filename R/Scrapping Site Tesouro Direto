@@ -1,0 +1,131 @@
+#Abrir o site Tesouro direto e retirar informações dos valores dos titulos. 
+	## Pacotes para execução das funções
+	library(Hmisc)
+	library(date)
+	library(zoo)
+	memory.limit(size = 4000)
+	library(sqldf)
+	library(stringr)
+	library(XML)
+	library(kulife)
+	library(xml2)
+
+	#Instalação do pacote para leitura do arquivo dbf
+	library(foreign)
+library(rvest)
+
+
+# 1 jeito
+
+#movie<- read_html("http://www.tesouro.fazenda.gov.br/tesouro-direto-precos-e-taxas-dos-titulos")
+
+#movie %>% html_node(".camposTesouroDireto:nth-child(1)") %>% html_text()
+#movie %>% html_node(".camposTesouroDireto:nth-child(2)") %>% html_text()
+#movie %>% html_node(".camposTesouroDireto:nth-child(3)") %>% html_text()
+
+
+#ou
+
+# 2 jeito e mais interessante
+url="http://www.tesouro.fazenda.gov.br/tesouro-direto-precos-e-taxas-dos-titulos"
+setwd("C:/Users/angelo/Dropbox/Angelo/Educação/Titulos Publicos")
+
+page = read_html(url)
+Tesouro.nodes = html_nodes(page,'.camposTesouroDireto')
+
+tam<-length(Tesouro.nodes)
+
+idnome<-1
+iddata<-2
+idtaxacompra<-3
+idtaxavenda<-4
+idvalorcompra<-5
+idvalorvenda<-6
+i<-1
+while(i<=tam){
+
+	nome<-substr(xml_find_all(Tesouro.nodes[i], ".//td")[idnome], str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idnome], "listing0")[,2]+3,str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idnome], "</td>")[,1]-1)
+	data<-substr(xml_find_all(Tesouro.nodes[i], ".//td")[iddata], str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[iddata], "listing")[,2]+3,str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[iddata], "</td>")[,1]-1)
+	taxacompra<-substr(xml_find_all(Tesouro.nodes[i], ".//td")[idtaxacompra], str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idtaxacompra], "listing taxaprecos")[,2]+3,str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idtaxacompra], "</td>")[,1]-1)
+	taxavenda<-substr(xml_find_all(Tesouro.nodes[i], ".//td")[idtaxavenda], str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idtaxavenda], "listing taxaprecos")[,2]+3,str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idtaxavenda], "</td>")[,1]-1)
+	valorcompra<-substr(xml_find_all(Tesouro.nodes[i], ".//td")[idvalorcompra], str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idvalorcompra], "listing taxaprecos")[,2]+3,str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idvalorcompra], "</td>")[,1]-1)
+	valorvenda<-substr(xml_find_all(Tesouro.nodes[i], ".//td")[idvalorvenda], str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idvalorvenda], "listing taxaprecos")[,2]+3,str_locate(xml_find_all(Tesouro.nodes[i], ".//td")[idvalorvenda], "</td>")[,1]-1)
+
+	if(i==1){
+		tituloini<-cbind(nome, data, taxacompra, taxavenda, valorcompra, valorvenda)
+		titulo<-tituloini
+	} else {
+	titulopos<-cbind(nome, data, taxacompra, taxavenda, valorcompra, valorvenda)
+	titulo<-rbind(titulo,titulopos)
+	}
+i=i+1
+}
+
+titulo<-as.data.frame(titulo)
+
+tamdata<-nchar(as.character(titulo$data))
+datatit<-0
+
+i=1
+while(i<=tam){
+if(tamdata[i]==11){
+	reduz[i]<-0
+	}else{
+	reduz[i]<-1
+	}
+#titulo$data[i]<-paste(substring(titulo$data[i],2-reduz[i],3-reduz[i]),substring(titulo$data[i],5-reduz[i],6-reduz[i]),substring(titulo$data[i],8-reduz[i],11-reduz[i]),sep="/")
+datatit[i]<-format(as.Date(paste(substring(titulo$data[i],8-reduz[i],11-reduz[i]),substring(titulo$data[i],5-reduz[i],6-reduz[i]),substring(titulo$data[i],2-reduz[i],3-reduz[i]),sep="-")), format="%d%m%Y")
+i=i+1
+}
+
+titulo$data<-datatit
+
+titulo$taxacompra<-as.numeric(as.character(gsub(",",".",gsub("[R$]","",gsub("[.]","",gsub(" ","",titulo$taxacompra))))))
+titulo$taxavenda<-as.numeric(as.character(gsub(",",".",gsub("[R$]","",gsub("[.]","",gsub(" ","",titulo$taxavenda))))))
+titulo$valorcompra<-as.numeric(as.character(gsub(",",".",gsub("[R$]","",gsub("[.]","",gsub(" ","",titulo$valorcompra))))))
+titulo$valorvenda<-as.numeric(as.character(gsub(",",".",gsub("[R$]","",gsub("[.]","",gsub(" ","",titulo$valorvenda))))))
+
+titulo[is.na(titulo)] <- "-"
+
+#formatar a base em formato para salvar 
+Taxacompra<-as.data.frame(cbind(as.data.frame(titulo$nome), titulo$data,titulo$taxacompra))
+Taxavenda<-as.data.frame(cbind(as.data.frame(titulo$nome), titulo$data,titulo$taxavenda))
+Valorcompra<-as.data.frame(cbind(as.data.frame(titulo$nome), titulo$data,titulo$valorcompra))
+Valorvenda<-as.data.frame(cbind(as.data.frame(titulo$nome), titulo$data,titulo$valorvenda))
+
+datahoje<-format(Sys.Date(), format="%d%m%Y")
+
+names(Taxacompra) <-  c("Nome", "DataVenc", paste("dt",datahoje,sep=""))
+names(Taxavenda) <-  c("Nome", "DataVenc", paste("dt",datahoje,sep=""))
+names(Valorcompra) <-  c("Nome", "DataVenc", paste("dt",datahoje,sep=""))
+names(Valorvenda) <-  c("Nome", "DataVenc", paste("dt",datahoje,sep=""))
+
+#ler a base em txt antiga
+Valorvendaantigo<-read.table(file=paste(getwd(),"Valor_Venda.txt", sep="/"), sep="\t", dec=",", header=TRUE)
+
+#Agrupar as tabelas
+
+
+#salvar as tabelas
+write.table(Taxacompra, file=paste(getwd(),"Taxa_Compra.txt", sep="/"), sep="\t", dec=",",row.names = FALSE, col.names = TRUE, quote = FALSE)
+write.table(Taxavenda, file=paste(getwd(),"Taxa_Venda.txt", sep="/"), sep="\t", dec=",",row.names = FALSE, col.names = TRUE, quote = FALSE)
+write.table(Valorcompra, file=paste(getwd(),"Valor_Compra.txt", sep="/"), sep="\t", dec=",",row.names = FALSE, col.names = TRUE, quote = FALSE)
+write.table(Valorvenda, file=paste(getwd(),"Valor_Venda.txt", sep="/"), sep="\t", dec=",",row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+
+
+
+
+#Verificar juros futuro
+
+url="http://www2.bmf.com.br/pages/portal/bmfbovespa/boletim1/BoletimOnline1.asp?caminho=&pagetype=pop&Acao=BUSCA&cboMercadoria=DI1"
+
+page = read_html(url)
+#Juros.nodes = html_nodes(page,'tabConteudo')
+
+
+#verificar o que tem na pesquisa focus e no relatorio do bacen de taxa de juros.
+
+
+
+

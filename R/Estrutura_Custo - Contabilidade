@@ -1,0 +1,36 @@
+# Calcular estrutura de custo
+
+conta<-c("salario","aluguel","outros","depreciacao","materiais","pv")
+valor<-c(2000,2000,1000,1000,0.5,2)
+class<-c("CF","CF","DF","CF","CV","PV")
+
+custos<-as.data.frame(cbind(conta,valor,class))
+
+custos[,2]<-as.numeric(as.character(custos[,2]))
+
+names(custos)[1]<-"conta"
+names(custos)[2]<-"valor"
+names(custos)[3]<-"class"
+
+margem_contribuição[1]<- custos[custos$conta=="pv",2]-custos[custos$conta=="materiais",2]
+margem_contribuição[1]
+
+cdf[1]<-sum(custos[(custos$class=="CF" | custos$class=="DF"),2])
+cdf[1]
+
+pec[1]<-cdf[1]/margem_contribuição[1]
+pec[1]
+
+
+#se reduzir o pv em 20%
+
+margem_contribuição[2]<- custos[custos$conta=="pv",2]*(1-0.2)-custos[custos$conta=="materiais",2]
+margem_contribuição[2]
+
+
+cdf[2]<-sum(custos[(custos$class=="CF" | custos$class=="DF"),2])
+cdf[2]
+
+pec[2]<-cdf[2]/margem_contribuição[2]
+pec[2]
+
