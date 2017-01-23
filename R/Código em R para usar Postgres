@@ -1,0 +1,35 @@
+#### Pacotes para execu��o das fun��es
+library(Hmisc)
+library(date)
+library(zoo)
+memory.limit(size = 8000)
+library(RMySQL)
+#library(xlsReadWrite)
+library(sendmailR)
+DataHoje <-format(Sys.time(), "%Y%m%d")
+DataHoje2<-Sys.time()
+
+#entrar na base de dados
+library(RPostgreSQL)
+library(rpg)
+pw <- {
+  "***REMOVED***"
+}
+# loads the PostgreSQL driver
+drv <- dbDriver("PostgreSQL")
+# creates a connection to the postgres database
+# note that "con" will be used later in each connection to the database
+con <- dbConnect(drv, dbname = "***REMOVED***",
+                 host = "***REMOVED***", port = 5432,
+                 user = "***REMOVED***", password = pw)
+rm(pw) # removes the password
+ 
+ # deixar configurado que as tabelas são live."tabela"
+dbGetQuery(con,'set search_path = "live";')
+ 
+ 
+# check for the cartable
+dbExistsTable(con, "***REMOVED***")
+
+#retorna a tabela como data frame
+rs<-dbGetQuery(con,'select * from "***REMOVED***" limit 10')
