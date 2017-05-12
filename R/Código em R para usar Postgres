@@ -20,16 +20,14 @@ drv <- dbDriver("PostgreSQL")
 # creates a connection to the postgres database
 # note that "con" will be used later in each connection to the database
 con <- dbConnect(drv, dbname = "***REMOVED***",
-                 host = "***REMOVED***.***REMOVED***.net", port = 5432,
-                 user = "***REMOVED***_readonly", password = pw)
+                 host = "***REMOVED***", port = 5432,
+                 user = "***REMOVED***", password = pw)
 rm(pw) # removes the password
  
- # deixar configurado que as tabelas são live."tabela"
+ # deixar configurado que as tabelas são live
 dbGetQuery(con,'set search_path = "live";')
  
- 
-# check for the cartable
-dbExistsTable(con, "Payables")
+dbExistsTable(con, "***REMOVED***")
 
 #retorna a tabela como data frame
-rs<-dbGetQuery(con,'select * from "FeeCollections" limit 10')
+rs<-dbGetQuery(con,'select * from "***REMOVED***" limit 10')
