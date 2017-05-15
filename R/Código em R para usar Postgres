@@ -24,11 +24,9 @@ con <- dbConnect(drv, dbname = "***REMOVED***",
                  user = "***REMOVED***", password = pw)
 rm(pw) # removes the password
  
- # deixar configurado que as tabelas são live."tabela"
+ # deixar configurado que as tabelas são live
 dbGetQuery(con,'set search_path = "live";')
  
- 
-# check for the cartable
 dbExistsTable(con, "***REMOVED***")
 
 #retorna a tabela como data frame
