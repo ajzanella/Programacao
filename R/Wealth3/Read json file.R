@@ -1,8 +1,10 @@
 	library(jsonlite)
 	library(stringr)
+	
+	setwd("C:/Users/ajzan/Desktop")
 
 	#trello.json.data<-fromJSON("C:/Users/ajzan/Desktop/trello file export.json", flatten=TRUE)
-	trello.json.data<-fromJSON("C:/Users/ajzan/Desktop/trello file export2.json", flatten=TRUE)
+	trello.json.data<-fromJSON("C:/Users/ajzan/Desktop/trello file export3.json", flatten=TRUE)
 
 	#######################
 	### set up variable ###
@@ -123,10 +125,6 @@
 		card_memberCreator_initials, card_memberCreator_username, card_member_id, card_member_avatarHash, card_member_fullName, card_member_initials, card_member_username)
 
 
-
-
-
-
 		#Checklist
 		a_checklist_data_base<-cbind(checklist_id, checklist_name, checklist_idBoard, checklist_idCard, checklist_pos, checklist_checkItems, 
 		checklist_limits_checkItems_perChecklist_status, checklist_limits_checkItems_perChecklist_disableAt, checklist_limits_checkItems_perChecklist_warnAt)
@@ -187,8 +185,38 @@ rm(a_a)
 
 if (sum(a_error_code)+sum(a_error_trello)==0){
 
+	#######################################
+	#### First report - Pages to sign #####
+	#######################################
+	n = length(checklist_name)
+	i = 1
+	report1<-c()
+	report2<-c()
+	while (i <= n) {
+		#find some word into one string
+		if(grepl("Niki",a_checklist_data_base[i,2])==1) {
+ 			report1<-append(report1, a_card_data_base[card_data_card_id==a_checklist_data_base[i,4],20][1])
+ 			if(a_checklist_data_base[checklist_idCard==a_checklist_data_base[i,4],6]$checklist_checkItems$state=="incomplete"){
+ 				j=1
+ 				m<-length(a_checklist_data_base[checklist_idCard==a_checklist_data_base[i,4],6]$checklist_checkItems$name)
+ 				list_incomplete_sign<-""
+ 				while (j<=m){
+ 					list_incomplete_sign<-paste(list_incomplete_sign ,a_checklist_data_base[checklist_idCard==a_checklist_data_base[i,4],6]$checklist_checkItems$name[j],sep=" ,")
+ 					j=j+1
+ 				}
+ 				report2<-c(report2,substring(list_incomplete_sign,3,10000))
+ 			}  #o report 2 esta criando as duas coisas pra assinar como sendo linhas separadas
+		}	
+		i = i + 1
+	}
+	report<-as.data.frame(cbind(report1,report2))
 
+names(report)[1]="Name"
+names(report)[2]="Documents to sign"
 
+write.table(report, file=paste(getwd(),"Report_Pages_to_Sign.txt", sep="/"), sep="\t", dec=",", row.names = FALSE,col.names = TRUE, quote = FALSE)
+
+##########################################################################
 
 
 
@@ -199,7 +227,7 @@ if (sum(a_error_code)+sum(a_error_trello)==0){
 
 
 } else{
-	print(paste("Check the variables names, have ", sum(a_error_code)+sum(a_error_trello)," error(s). Start again",sep=""))
+	print(paste("Check the variable names, have ", sum(a_error_code)+sum(a_error_trello)," error(s). Start again",sep=""))
 }
 
 
