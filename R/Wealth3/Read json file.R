@@ -89,6 +89,9 @@
 		card_member_fullName<-trello.json.data$actions$member.fullName
 		card_member_initials<-trello.json.data$actions$member.initials
 		card_member_username<-trello.json.data$actions$member.username
+		card_data_card_idAttachmentCover<-trello.json.data$actions$data.card.idAttachmentCover
+		card_data_old_idAttachmentCover<-trello.json.data$actions$data.old.idAttachmentCover
+		card_data_attachment_edgeColor<-trello.json.data$actions$data.attachment.edgeColor
 
 
 
@@ -122,7 +125,8 @@
 		card_data_attachment_previewUrl2x, card_data_cardSource_shortLink, card_data_cardSource_idShort, card_data_cardSource_name, card_data_cardSource_id, 
 		card_data_boardSource_id, card_data_plugin_url, card_data_plugin_public, card_data_plugin_name, card_data_plugin_id, card_data_member_name, card_data_member_id, 
 		card_data_boardTarget_id, card_data_organization_name, card_data_organization_id, card_memberCreator_id, card_memberCreator_avatarHash, card_memberCreator_fullName, 
-		card_memberCreator_initials, card_memberCreator_username, card_member_id, card_member_avatarHash, card_member_fullName, card_member_initials, card_member_username)
+		card_memberCreator_initials, card_memberCreator_username, card_member_id, card_member_avatarHash, card_member_fullName, card_member_initials, card_member_username,
+		card_data_card_idAttachmentCover, card_data_old_idAttachmentCover, card_data_attachment_edgeColor)
 
 
 		#Checklist
@@ -169,9 +173,9 @@
 ###delete old variables###
 ##########################
 a_a<-ls()
-a_ = length(ls())
+a_ = length(ls())-1
 del_var<-c()
-while (a_ >= 0){
+while (a_ > 0){
 	if(substring(a_a[a_],1,2)!="a_"){
 		del_var<-append(del_var, a_a[a_])
 #		rm(a_a[a_])
@@ -182,26 +186,34 @@ rm(list = del_var)
 rm(a_)
 rm(a_a)
 
+a_card_data_base<-as.data.frame(a_card_data_base)
+a_checklist_data_base<-as.data.frame(a_checklist_data_base)
 
 if (sum(a_error_code)+sum(a_error_trello)==0){
 
 	#######################################
 	#### First report - Pages to sign #####
 	#######################################
-	n = length(checklist_name)
+	n = length(a_checklist_data_base$checklist_name)
 	i = 1
 	report1<-c()
 	report2<-c()
 	while (i <= n) {
 		#find some word into one string
-		if(grepl("Niki",a_checklist_data_base[i,2])==1) {
- 			report1<-append(report1, a_card_data_base[card_data_card_id==a_checklist_data_base[i,4],20][1])
- 			if(a_checklist_data_base[checklist_idCard==a_checklist_data_base[i,4],6]$checklist_checkItems$state=="incomplete"){
+		if(grepl("Niki",a_checklist_data_base$checklist_name[i])==1) {
+			#if find, save the name of card
+			new_table<-matrix(unlist(a_card_data_base$card_data_card_name[a_card_data_base$card_data_card_id==a_checklist_data_base$checklist_idCard[i]]))
+ 			report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
+
+			table_decision <- matrix(unlist(a_checklist_data_base[i,]$checklist_checkItems), ncol = length(a_checklist_data_base[i,]$checklist_checkItems)*5,byrow = FALSE)
+			table_decision <- subset(table_decision, table_decision[,1]=="incomplete")
+
+ 			if(nrow(table_decision)>0){
  				j=1
- 				m<-length(a_checklist_data_base[checklist_idCard==a_checklist_data_base[i,4],6]$checklist_checkItems$name)
+ 				m<-nrow(table_decision)
  				list_incomplete_sign<-""
  				while (j<=m){
- 					list_incomplete_sign<-paste(list_incomplete_sign ,a_checklist_data_base[checklist_idCard==a_checklist_data_base[i,4],6]$checklist_checkItems$name[j],sep=" ,")
+ 					list_incomplete_sign<-paste(list_incomplete_sign ,table_decision[j,4],sep=" ,")
  					j=j+1
  				}
  				report2<-c(report2,substring(list_incomplete_sign,3,10000))
