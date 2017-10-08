@@ -191,10 +191,14 @@ a_checklist_data_base<-as.data.frame(a_checklist_data_base)
 
 if (sum(a_error_code)+sum(a_error_trello)==0){
 
-	#######################################
-	#### First report - Pages to sign #####
-	#######################################
-	n = length(a_checklist_data_base$checklist_name)
+	#########################################
+	#### First report - Pages to sign 1 #####
+	#########################################
+
+	#maybe can reduce time doing a subset with only checklist that i need (ex. Niki sign page)
+
+
+	n = length(a_checklist_data_base$checklist_name)   
 	i = 1
 	report1<-c()
 	report2<-c()
@@ -203,10 +207,26 @@ if (sum(a_error_code)+sum(a_error_trello)==0){
 		if(grepl("Niki",a_checklist_data_base$checklist_name[i])==1) {
 			#if find, save the name of card
 			new_table<-matrix(unlist(a_card_data_base$card_data_card_name[a_card_data_base$card_data_card_id==a_checklist_data_base$checklist_idCard[i]]))
+
  			report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
 
-			table_decision <- matrix(unlist(a_checklist_data_base[i,]$checklist_checkItems), ncol = length(a_checklist_data_base[i,]$checklist_checkItems)*5,byrow = FALSE)
+ 			aux<-substring(names(unlist(a_checklist_data_base[i,]$checklist_checkItems)),1,5)
+ 			j=1
+ 			ncolaux=1
+ 			while(j<=length(aux)-1){
+ 				if(aux[j]==aux[j+1]){
+ 					j=j+1
+ 					ncolaux = j
+ 				} else{
+ 					j=j+length(aux)
+ 				}
+ 			}
+
+			table_decision <- matrix(unlist(a_checklist_data_base[i,]$checklist_checkItems), ncol = length(aux)/ncolaux,byrow = FALSE)
 			table_decision <- subset(table_decision, table_decision[,1]=="incomplete")
+
+
+			#a_checklist_data_base[a_checklist_data_base$checklist_id=="59cdc8c1bb1407fadf5a65ab",]
 
  			if(nrow(table_decision)>0){
  				j=1
@@ -220,6 +240,7 @@ if (sum(a_error_code)+sum(a_error_trello)==0){
  			}  #o report 2 esta criando as duas coisas pra assinar como sendo linhas separadas
 		}	
 		i = i + 1
+		print(i)
 	}
 	report<-as.data.frame(cbind(report1,report2))
 
@@ -245,8 +266,8 @@ write.table(report, file=paste(getwd(),"Report_Pages_to_Sign.txt", sep="/"), sep
 
 
 #agregate by card
-card.data.base<-sort(card.data.base, )
-card.data.base[1:15,]
+#card.data.base<-sort(card.data.base, )
+#card.data.base[1:15,]
 
 
 
