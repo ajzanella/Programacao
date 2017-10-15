@@ -207,9 +207,7 @@ if (sum(a_error_code)+sum(a_error_trello)==0){
 		if(grepl("Niki",a_checklist_data_base$checklist_name[i])==1) {
 			#if find, save the name of card
 			new_table<-matrix(unlist(a_card_data_base$card_data_card_name[a_card_data_base$card_data_card_id==a_checklist_data_base$checklist_idCard[i]]))
-
- 			report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
-
+ 			#report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
  			aux<-substring(names(unlist(a_checklist_data_base[i,]$checklist_checkItems)),1,5)
  			j=1
  			ncolaux=1
@@ -221,13 +219,8 @@ if (sum(a_error_code)+sum(a_error_trello)==0){
  					j=j+length(aux)
  				}
  			}
-
 			table_decision <- matrix(unlist(a_checklist_data_base[i,]$checklist_checkItems), ncol = length(aux)/ncolaux,byrow = FALSE)
 			table_decision <- subset(table_decision, table_decision[,1]=="incomplete")
-
-
-			#a_checklist_data_base[a_checklist_data_base$checklist_id=="59cdc8c1bb1407fadf5a65ab",]
-
  			if(nrow(table_decision)>0){
  				j=1
  				m<-nrow(table_decision)
@@ -238,19 +231,122 @@ if (sum(a_error_code)+sum(a_error_trello)==0){
  				}
  				report2<-c(report2,substring(list_incomplete_sign,3,10000))
  			}  #o report 2 esta criando as duas coisas pra assinar como sendo linhas separadas
+			 			if (length(report2)!=0){
+ 				report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
+ 			}
 		}	
 		i = i + 1
-		print(i)
+	}
+	report<-as.data.frame(cbind(report1,report2))
+names(report)[1]="Name"
+names(report)[2]="Documents to sign"
+
+	#########################################
+	#### First report - Pages to sign 2 #####
+	#########################################
+	
+	#n_card_data_base<-subset(a_card_data_base, a_card_data_base$card_data_checklist_name!="NA")
+	#n = length(n_card_data_base$card_data_checklist_name)   
+	#i = 1
+	#report1<-c()
+	#report2<-c()
+	#while (i <= n) {
+		#find some word into one string
+	#	if(grepl("Niki",n_card_data_base$card_data_checklist_name[i])==1) {
+			#if find, save the name of card
+	#		new_table<-matrix(unlist(n_card_data_base$card_data_card_name[n_card_data_base$card_data_card_id[i]==a_checklist_data_base$checklist_idCard]))
+ 	#		report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
+ 	#		aux<-substring(names(unlist(a_checklist_data_base[n_card_data_base$card_data_card_id[i]==a_checklist_data_base$checklist_idCard,]$checklist_checkItems)),1,5)
+ 	#		j=1
+ 	#		ncolaux=1
+ 	#		while(j<=length(aux)-1){
+ 	#			if(aux[j]==aux[j+1]){
+ 	#				j=j+1
+ 	#				ncolaux = j
+ 	#			} else{
+ 	#				j=j+length(aux)
+ 	#			}
+ 	#		}
+	#		table_decision <- matrix(unlist(a_checklist_data_base[n_card_data_base$card_data_card_id[i]==a_checklist_data_base$checklist_idCard,]$checklist_checkItems), ncol = length(aux)/ncolaux,byrow = FALSE)
+	#		table_decision <- subset(table_decision, table_decision[,1]=="incomplete")
+ 	#		if(nrow(table_decision)>0){
+ 	#			j=1
+ 	#			m<-nrow(table_decision)
+ 	#			list_incomplete_sign<-""
+ 	#			while (j<=m){
+ 	#				list_incomplete_sign<-paste(list_incomplete_sign ,table_decision[j,4],sep=" ,")
+ 	#				j=j+1
+ 	#			}
+ 	#			report2<-c(report2,substring(list_incomplete_sign,3,10000))
+ 	#		}  #o report 2 esta criando as duas coisas pra assinar como sendo linhas separadas
+	#	}	
+	#	i = i + 1
+	#}
+	#report_additional<-as.data.frame(cbind(report1,report2))
+
+	#names(report_additional)[1]="Name"
+	#names(report_additional)[2]="Documents to sign"
+
+	#report<-rbind(report,report_additional)
+
+write.table(report, file=paste(getwd(),"Report_Pages_to_Sign_Niki.txt", sep="/"), sep="\t", dec=",", row.names = FALSE,col.names = TRUE, quote = FALSE)
+
+##########################################################################
+
+
+	#############################################################
+	#### First report - Pages to sign Outstanding Documents #####
+	#############################################################
+
+	#maybe can reduce time doing a subset with only checklist that i need (ex. Niki sign page)
+
+
+	n = length(a_checklist_data_base$checklist_name)   
+	i = 1
+	report1<-c()
+	report2<-c()
+	while (i <= n) {
+		#find some word into one string
+		if(grepl("Outstanding",a_checklist_data_base$checklist_name[i])==1) {
+			#if find, save the name of card
+			new_table<-matrix(unlist(a_card_data_base$card_data_card_name[a_card_data_base$card_data_card_id==a_checklist_data_base$checklist_idCard[i]]))
+ 			#report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
+ 			aux<-substring(names(unlist(a_checklist_data_base[i,]$checklist_checkItems)),1,5)
+ 			j=1
+ 			ncolaux=1
+ 			while(j<=length(aux)-1){
+ 				if(aux[j]==aux[j+1]){
+ 					j=j+1
+ 					ncolaux = j
+ 				} else{
+ 					j=j+length(aux)
+ 				}
+ 			}
+			table_decision <- matrix(unlist(a_checklist_data_base[i,]$checklist_checkItems), ncol = length(aux)/ncolaux,byrow = FALSE)
+			table_decision <- subset(table_decision, table_decision[,1]=="incomplete")
+ 			if(nrow(table_decision)>0){
+ 				j=1
+ 				m<-nrow(table_decision)
+ 				list_incomplete_sign<-""
+ 				while (j<=m){
+ 					list_incomplete_sign<-paste(list_incomplete_sign ,table_decision[j,4],sep=" ,")
+ 					j=j+1
+ 				}
+ 				report2<-c(report2,substring(list_incomplete_sign,3,10000))
+ 			}  #o report 2 esta criando as duas coisas pra assinar como sendo linhas separadas
+ 			if (length(report2)!=0){
+ 				report1<-append(report1, toString(subset(new_table, new_table!="NA")[1]))
+ 			}
+		}	
+		i = i + 1
 	}
 	report<-as.data.frame(cbind(report1,report2))
 
 names(report)[1]="Name"
 names(report)[2]="Documents to sign"
-
-write.table(report, file=paste(getwd(),"Report_Pages_to_Sign.txt", sep="/"), sep="\t", dec=",", row.names = FALSE,col.names = TRUE, quote = FALSE)
-
-##########################################################################
-
+#####Have error
+######check
+write.table(report, file=paste(getwd(),"Report_Pages_to_Sign_Outstanding_Documents.txt", sep="/"), sep="\t", dec=",", row.names = FALSE,col.names = TRUE, quote = FALSE)
 
 
 
