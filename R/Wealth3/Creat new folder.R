@@ -66,6 +66,12 @@ while (i <=length(ClientNames)) {
 				m=m+1
 			}
 		}
+		if (!dir.exists(paste(MainDir,ClientNames[i],"AML", sep = "/")) == TRUE) {
+			dir.create(file.path(MainDir,ClientNames[i],"AML")) #5#
+		}
+		if (!dir.exists(paste(MainDir,ClientNames[i],"WILL", sep = "/")) == TRUE) {
+			dir.create(file.path(MainDir,ClientNames[i],"WILL")) #5#			
+		}
 	}
 	#dont exist client ------ do nothing
 	i=i+1
