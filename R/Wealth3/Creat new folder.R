@@ -90,16 +90,31 @@ find_folder <- function(MainDir, SubDir, comparable){
 			#if no, verify if is similar,
 			if(comparable[i]=="Advice and Research"){
 				#
+				if (((grep("Adv", SubDir)>0) || (grep("Rese", SubDir)>0)) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
+					var_find_folder <-1
+					i = i + 1000
+				}
 			}else{
 				if(comparable[i]=="Application and Statement"){
 					#
+					if (((grep("App", SubDir)>0) || (grep("Stat", SubDir)>0)) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
+						var_find_folder <-1
+						i = i + 1000
+					}
 				} else{
 					if(comparable[i]=="Correspondence"){
 						#
+						if ((grep("Corr", SubDir)>0) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
+							var_find_folder <-1
+							i = i + 1000
+						}
 					} else{
 						if(comparable[i]=="Info from Client"){
 							#
-
+							if (((grep("Info", SubDir)>0) || (grep("Client", SubDir)>0)) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
+								var_find_folder <-1
+								i = i + 1000
+							}
 						}	
 					}
 				}
@@ -109,5 +124,9 @@ find_folder <- function(MainDir, SubDir, comparable){
 	}
 	return(var_find_folder)
 }
+
+####How connect two functions. Issue with MainDir and SubDir. Subdir and comparable is igual.
+
+
 #for ROA, SOA or Review don't need because if the name was wrote wrong, dont have anything to find and know. And i will create a new folder.
 #se o return nao retornar e encerrar a funcao, criar uma variavel e rodar tudo e no final retornar o valor da variavel.
