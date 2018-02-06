@@ -76,3 +76,38 @@ while (i <=length(ClientNames)) {
 	#dont exist client ------ do nothing
 	i=i+1
 }
+
+
+find_folder <- function(MainDir, SubDir, comparable){
+	i=1
+	var_find_folder <- 0
+	while i <= length(comparable){
+	#verify if find igual,
+		if (SubDir == comparable[i]){  #and maindir with subdir exist, return 1 to not create a folder
+			var_find_folder <-1
+			i = i + 1000
+		}else{
+			#if no, verify if is similar,
+			if(comparable[i]=="Advice and Research"){
+				#
+			}else{
+				if(comparable[i]=="Application and Statement"){
+					#
+				} else{
+					if(comparable[i]=="Correspondence"){
+						#
+					} else{
+						if(comparable[i]=="Info from Client"){
+							#
+
+						}	
+					}
+				}
+			}
+		}
+		i=i+1
+	}
+	return(var_find_folder)
+}
+#for ROA, SOA or Review don't need because if the name was wrote wrong, dont have anything to find and know. And i will create a new folder.
+#se o return nao retornar e encerrar a funcao, criar uma variavel e rodar tudo e no final retornar o valor da variavel.
