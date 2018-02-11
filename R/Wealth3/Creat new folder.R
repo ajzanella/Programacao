@@ -8,43 +8,135 @@ AdviceSubFolder<-c("Review","ROA","SOA")
 
 ClientNames<-list.files(MainDir,full.names = FALSE, recursive = FALSE)
 
+####################
+#Function
+
+
+
+find_folder = function(MainDirF, SubDirF, comparable){
+	ii=1
+	var_find_folder <- 0
+	while (ii <= length(SubDirF)){
+	#verify if find igual,
+		RealFolder<-SubDirF[ii]
+		if (SubDirF [ii] == comparable){  #and maindirF with subdirF exist, return 1 to not create a folder
+			var_find_folder <-1
+			ii = ii + 1000
+		}else{
+			#if no, verify if is similar,
+			if(comparable=="Advice and Research"){
+				#
+				if (((length(grep("Adv", SubDirF[ii])>0)>=1) || (length(grep("Rese", SubDirF[ii])>0)>=1)) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+					var_find_folder <-1
+					ii = ii + 1000
+				}
+			}else{
+				if(comparable=="Application and Statement"){
+					#
+					if (((length(grep("App", SubDirF[ii])>0)>=1) || (length(grep("Stat", SubDirF[ii])>0)>=1)) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+						var_find_folder <-1
+						ii = ii + 1000
+					}
+				} else{
+					if(comparable=="Correspondence"){
+						#
+						if ((length(grep("Corr", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+							var_find_folder <-1
+							ii = ii + 1000
+						}
+					} else{
+						if(comparable=="Info from Client"){
+							#
+							if (((length(grep("Info", SubDirF[ii])>0)>=1) || (length(grep("Client", SubDirF[ii])>0)>=1)) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+								var_find_folder <-1
+								ii = ii + 1000
+							}
+						} else{
+							if(comparable=="Review"){
+								#
+								if ((length(grep("Review", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+									var_find_folder <-1
+									ii = ii + 1000
+								} 
+							}else{
+								if(comparable=="ROA"){
+									#
+									if ((length(grep("ROA", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+										var_find_folder <-1
+										ii = ii + 1000
+									} 
+								}else{
+									if(comparable=="SOA"){
+										#
+										if ((length(grep("SOA", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+											var_find_folder <-1
+											ii = ii + 1000
+										}
+									} 
+								}
+							}
+						}	
+					}
+				}
+			}
+		}
+		ii=ii+1
+	}
+	if(var_find_folder==1){
+		return(RealFolder)
+	} else{
+		return(comparable)
+	}
+}
+
+
+
+######################
+
+
 i=1
 while (i <=length(ClientNames)) {
 	if (dir.exists(paste(MainDir,ClientNames[i], sep = "/")) == TRUE) {
 		if (dir.exists(paste(MainDir,ClientNames[i],Year, sep = "/")) == TRUE) {
+			YearSubFolderReal<-list.files(paste(MainDir,ClientNames[i],Year, sep = "/"),full.names = FALSE, recursive = FALSE)
 			j=1
 			while (j<=length(YearSubFolder)){
-				if (j==1){
-					if (dir.exists(paste(MainDir,ClientNames[i],Year,YearSubFolder[j], sep = "/")) == TRUE) {
-						k=1
-						while (k<=length(AdviceSubFolder)){
-							if (dir.exists(paste(MainDir,ClientNames[i],Year,YearSubFolder[j],AdviceSubFolder[k], sep = "/")) == TRUE) {
-								#if the folder exist, dont do anything (because the folder was created)
+					CorrectYearSubFolder<-find_folder(MainDir = paste(MainDir,ClientNames[i],Year, sep = "/"), SubDir = YearSubFolderReal, comparable = YearSubFolder[j])
+					if (j==1){
+						if (dir.exists(paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder, sep = "/")) == TRUE) {
+							AdviceSubFolderReal<-list.files(paste(MainDir,ClientNames[i],Year, CorrectYearSubFolder, sep = "/"),full.names = FALSE, recursive = FALSE)
+							k=1
+							while (k<=length(AdviceSubFolder)){
+									CorrectAdviceSubFolder<-find_folder(MainDir = paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder, sep = "/"), SubDir = AdviceSubFolderReal, comparable = AdviceSubFolder[k])
+									if (dir.exists(paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder,CorrectAdviceSubFolder, sep = "/")) == TRUE) { 
+										#if the folder exist, dont do anything (because the folder was created)
+									}
+									else{
+										dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,CorrectAdviceSubFolder)) #1#  
+										print(list.files(paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder,sep="/"),full.names = TRUE, recursive = FALSE)[k]) #print the full dir to check if the dir was created
+									}
+								k=k+1
 							}
-							else{
-								dir.create(file.path(MainDir,ClientNames[i],Year,YearSubFolder[j],AdviceSubFolder[k])) #1#
-								print(list.files(paste(MainDir,ClientNames[i],Year,YearSubFolder[j],sep="/"),full.names = TRUE, recursive = FALSE)[k]) #print the full dir to check if the dir was created
-							}
-							k=k+1
+						}
+						else{
+							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder)) #2#
+							print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j]) #print the full dir to check if the dir was created
 						}
 					}
 					else{
-						dir.create(file.path(MainDir,ClientNames[i],Year,YearSubFolder[j])) #2#
-						print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j]) #print the full dir to check if the dir was created
+						#j!=1
+						if (dir.exists(paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder, sep = "/")) == TRUE) {
+							#if the folder exist, dont do anything (because the folder was created)
+						}
+						else{
+							dir.create(file.path(MainDir,ClientNames[i],Year,YearSubFolder[j])) #3# 
+							print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j])
+							 #print the full dir to check if the dir was created
+						}
 					}
-				}
-				else{
-					#j!=3
-					if (dir.exists(paste(MainDir,ClientNames[i],Year,YearSubFolder[j], sep = "/")) == TRUE) {
-						#if the folder exist, dont do anything (because the folder was created)
-					}
-					else{
-						dir.create(file.path(MainDir,ClientNames[i],Year,YearSubFolder[j])) #3# 
-						print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j]) #print the full dir to check if the dir was created
-					}
-				}
 				j=j+1
 			}
+
 		}	
 		else{
 			#dontexistyear
@@ -73,59 +165,9 @@ while (i <=length(ClientNames)) {
 			dir.create(file.path(MainDir,ClientNames[i],"WILL")) #5#			
 		}
 	}
-	#dont exist client ------ do nothing
 	i=i+1
 }
 
-
-find_folder <- function(MainDir, SubDir, comparable){
-	i=1
-	var_find_folder <- 0
-	while i <= length(comparable){
-	#verify if find igual,
-		if (SubDir == comparable[i]){  #and maindir with subdir exist, return 1 to not create a folder
-			var_find_folder <-1
-			i = i + 1000
-		}else{
-			#if no, verify if is similar,
-			if(comparable[i]=="Advice and Research"){
-				#
-				if (((grep("Adv", SubDir)>0) || (grep("Rese", SubDir)>0)) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
-					var_find_folder <-1
-					i = i + 1000
-				}
-			}else{
-				if(comparable[i]=="Application and Statement"){
-					#
-					if (((grep("App", SubDir)>0) || (grep("Stat", SubDir)>0)) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
-						var_find_folder <-1
-						i = i + 1000
-					}
-				} else{
-					if(comparable[i]=="Correspondence"){
-						#
-						if ((grep("Corr", SubDir)>0) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
-							var_find_folder <-1
-							i = i + 1000
-						}
-					} else{
-						if(comparable[i]=="Info from Client"){
-							#
-							if (((grep("Info", SubDir)>0) || (grep("Client", SubDir)>0)) && dir.exists(paste(MainDir,SubDir, sep = "/")) ){
-								var_find_folder <-1
-								i = i + 1000
-							}
-						}	
-					}
-				}
-			}
-		}
-		i=i+1
-	}
-	return(var_find_folder)
-}
-
-####How connect two functions. Issue with MainDir and SubDir. Subdir and comparable is igual.
 
 
 #for ROA, SOA or Review don't need because if the name was wrote wrong, dont have anything to find and know. And i will create a new folder.
