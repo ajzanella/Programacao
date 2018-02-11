@@ -120,7 +120,12 @@ while (i <=length(ClientNames)) {
 						}
 						else{
 							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder)) #2#
-							print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j]) #print the full dir to check if the dir was created
+							print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j]) 
+							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"Review")) #2#
+							print(list.files(paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder,sep="/"),full.names = TRUE, recursive = FALSE)) 
+							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"ROA")) #2#
+							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"SOA")) #2#
+							#print the full dir to check if the dir was created
 						}
 					}
 					else{
