@@ -4,7 +4,8 @@
 MainDir <- "C:/Users/ajzan/Desktop/Wealth3/egali"
 Year<-2018
 YearSubFolder<-c("Advice and Research", "Application and Statement", "Correspondence", "Info from Client")
-AdviceSubFolder<-c("Review","ROA","SOA")
+#AdviceSubFolder<-c("Review","ROA","SOA")
+AdviceSubFolder<-c("Review")
 
 ClientNames<-list.files(MainDir,full.names = FALSE, recursive = FALSE)
 
@@ -58,22 +59,22 @@ find_folder = function(MainDirF, SubDirF, comparable){
 									var_find_folder <-1
 									ii = ii + 1000
 								} 
-							}else{
-								if(comparable=="ROA"){
+#							}else{
+#								if(comparable=="ROA"){
 									#
-									if ((length(grep("ROA", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
-										var_find_folder <-1
-										ii = ii + 1000
-									} 
-								}else{
-									if(comparable=="SOA"){
-										#
-										if ((length(grep("SOA", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
-											var_find_folder <-1
-											ii = ii + 1000
-										}
-									} 
-								}
+#									if ((length(grep("ROA", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+#										var_find_folder <-1
+#										ii = ii + 1000
+#									} 
+#								}else{
+#									if(comparable=="SOA"){
+#										#
+#										if ((length(grep("SOA", SubDirF[ii])>0)>=1) && dir.exists(paste(MainDirF,SubDirF[ii], sep = "/")) ){
+#											var_find_folder <-1
+#											ii = ii + 1000
+#										}
+#									} 
+#								}
 							}
 						}	
 					}
@@ -123,8 +124,8 @@ while (i <=length(ClientNames)) {
 							print(list.files(paste(MainDir,ClientNames[i],Year,sep="/"),full.names = TRUE, recursive = FALSE)[j]) 
 							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"Review")) #2#
 							print(list.files(paste(MainDir,ClientNames[i],Year,CorrectYearSubFolder,sep="/"),full.names = TRUE, recursive = FALSE)) 
-							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"ROA")) #2#
-							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"SOA")) #2#
+#							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"ROA")) #2#
+#							dir.create(file.path(MainDir,ClientNames[i],Year,CorrectYearSubFolder,"SOA")) #2#
 							#print the full dir to check if the dir was created
 						}
 					}
